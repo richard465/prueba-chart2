@@ -34,6 +34,9 @@ jobs:
           import os, json, requests
           from datetime import datetime, timedelta, timezone
 
+          # Ajuste de zona horaria local (UTC-5)
+          local_tz = timezone(timedelta(hours=-5))
+
           token = os.getenv("PROJECT_TOKEN")
           user = os.getenv("USER_NAME")
           proj_num = int(os.getenv("PROJECT_NUMBER", "2"))
@@ -115,11 +118,12 @@ jobs:
 
           remaining_points = total_points - closed_points
 
+          today = datetime.now(local_tz).date()
+
           if not sprint_start_date:
-              sprint_start_date = datetime.now(timezone.utc).date()
+              sprint_start_date = today
 
           end_date = sprint_start_date + timedelta(days=sprint_duration - 1)
-          today = datetime.now(timezone.utc).date()
 
           sprint_days = []
           curr = sprint_start_date
@@ -140,18 +144,22 @@ jobs:
               except Exception:
                   history = {}
 
-          # Registrar inicio del Sprint
+          # Eliminar registros futuros no deseados generados por UTC
+          today_label = today.strftime("%b %d")
+          history = {k: v for k, v in history.items() if datetime.strptime(f"{k} {today.year}", "%b %d %Y").date() <= today}
+
+          # Registrar puntos al inicio del sprint si es la primera vez
           first_day_label = sprint_start_date.strftime("%b %d")
           if first_day_label not in history:
               history[first_day_label] = total_points
 
-          today_label = today.strftime("%b %d")
+          # Registrar el valor del día de hoy (hora local)
           history[today_label] = remaining_points
 
           with open(history_file, "w") as f:
               json.dump(history, f, indent=2)
 
-          # Rellenar valores nulos usando propagación del último punto registrado hasta hoy
+          # Rellenar la gráfica respetando los días transcurridos hasta hoy
           real_data = []
           last_val = None
           for day in sprint_days:
