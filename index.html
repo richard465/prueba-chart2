@@ -18,9 +18,9 @@
     <div class="card">
         <h2>Burndown Chart - sprint 1</h2>
         <div class="metrics">
-            <div class="metric-box"><label>Total Story Points</label><span>7</span></div>
+            <div class="metric-box"><label>Total Story Points</label><span>15</span></div>
             <div class="metric-box"><label>Completados</label><span style="color: #36b37e;">2</span></div>
-            <div class="metric-box"><label>Restantes</label><span style="color: #de350b;">5</span></div>
+            <div class="metric-box"><label>Restantes</label><span style="color: #de350b;">13</span></div>
         </div>
         <canvas id="burndownChart" height="130"></canvas>
     </div>
@@ -33,7 +33,7 @@
                 datasets: [
                     {
                         label: 'Línea Guía Ideal',
-                        data: [7.0, 6.46, 5.92, 5.38, 4.85, 4.31, 3.77, 3.23, 2.69, 2.15, 1.62, 1.08, 0.54, 0.0],
+                        data: [15.0, 13.85, 12.69, 11.54, 10.38, 9.23, 8.08, 6.92, 5.77, 4.62, 3.46, 2.31, 1.15, 0.0],
                         borderColor: '#8993a4',
                         borderDash: [6, 6],
                         borderWidth: 2,
@@ -42,7 +42,7 @@
                     },
                     {
                         label: 'Puntos Restantes (Real)',
-                        data: [7, null, null, null, null, null, 5, null, null, null, null, null, null, null],
+                        data: [15, null, null, null, null, null, 13, null, null, null, null, null, null, null],
                         borderColor: '#de350b',
                         backgroundColor: 'rgba(222, 53, 11, 0.05)',
                         borderWidth: 2.5,
