@@ -50,7 +50,7 @@ jobs:
               projectV2(number: $number) {
                 items(first: 100) {
                   nodes {
-                    fieldValues(first: 15) {
+                    fieldValues(first: 20) {
                       nodes {
                         ... on ProjectV2ItemFieldSingleSelectValue {
                           name
@@ -86,21 +86,22 @@ jobs:
           sprint_duration = 14
 
           for item in items:
-              status = "Todo"
+              status = "todo"
               stimate = 0
               item_iteration = None
 
               for field in item.get("fieldValues", {}).get("nodes", []):
-                  if not field:
+                  if not field or "field" not in field:
                       continue
+                  
                   fname = field.get("field", {}).get("name", "").strip().lower()
 
                   if fname == "status":
-                      status = field.get("name", "Todo")
-                  elif "stimate" in fname or "estimate" in fname:
+                      status = str(field.get("name", "todo")).strip().lower()
+                  elif "estimate" in fname or "stimate" in fname:
                       if field.get("number") is not None:
                           stimate = int(field.get("number"))
-                  elif "title" in field:
+                  elif "title" in field or fname == "sprint":
                       item_iteration = str(field.get("title", "")).strip().lower()
                       if item_iteration == target_iter and not sprint_start_date:
                           if field.get("startDate"):
@@ -109,7 +110,7 @@ jobs:
 
               if item_iteration == target_iter:
                   total_points += stimate
-                  if status in ["Done", "Completed"]:
+                  if status in ["done", "completed", "completado"]:
                       closed_points += stimate
 
           remaining_points = total_points - closed_points
@@ -139,7 +140,7 @@ jobs:
               except Exception:
                   history = {}
 
-          # Registrar los puntos del primer día como el total del Sprint si no existe
+          # Registrar inicio del Sprint
           first_day_label = sprint_start_date.strftime("%b %d")
           if first_day_label not in history:
               history[first_day_label] = total_points
@@ -150,7 +151,19 @@ jobs:
           with open(history_file, "w") as f:
               json.dump(history, f, indent=2)
 
-          real_data = [history[day] if day in history else "null" for day in sprint_days]
+          # Rellenar valores nulos usando propagación del último punto registrado hasta hoy
+          real_data = []
+          last_val = None
+          for day in sprint_days:
+              day_date = datetime.strptime(f"{day} {today.year}", "%b %d %Y").date()
+              if day in history:
+                  last_val = history[day]
+                  real_data.append(last_val)
+              elif day_date <= today and last_val is not None:
+                  real_data.append(last_val)
+              else:
+                  real_data.append("null")
+
           real_js = "[" + ", ".join(["null" if x == "null" else str(x) for x in real_data]) + "]"
 
           html_content = f"""<!DOCTYPE html>
@@ -204,7 +217,7 @@ jobs:
                                   pointRadius: 4,
                                   pointBackgroundColor: '#de350b',
                                   fill: true,
-                                  stepped: 'before'
+                                  spanGaps: true
                               }}
                           ]
                       }},
