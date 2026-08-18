@@ -15,6 +15,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Descargar historial previo desde gh-pages
+        run: |
+          mkdir -p out
+          git fetch origin gh-pages || true
+          git checkout origin/gh-pages -- history.json || true
+          if [ -f history.json ]; then
+            mv history.json out/history.json
+            echo "Historial previo recuperado desde gh-pages."
+          else
+            echo "No se encontró historial previo en gh-pages, iniciando uno nuevo."
+          fi
+
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
@@ -117,7 +129,6 @@ jobs:
                       closed_points += stimate
 
           remaining_points = total_points - closed_points
-
           today = datetime.now(local_tz).date()
 
           if not sprint_start_date:
@@ -144,22 +155,22 @@ jobs:
               except Exception:
                   history = {}
 
-          # Eliminar registros futuros no deseados generados por UTC
+          # Eliminar registros futuros generados por UTC
           today_label = today.strftime("%b %d")
           history = {k: v for k, v in history.items() if datetime.strptime(f"{k} {today.year}", "%b %d %Y").date() <= today}
 
-          # Registrar puntos al inicio del sprint si es la primera vez
+          # Registrar inicio de sprint si no existía
           first_day_label = sprint_start_date.strftime("%b %d")
           if first_day_label not in history:
               history[first_day_label] = total_points
 
-          # Registrar el valor del día de hoy (hora local)
+          # Registrar el valor actual de hoy
           history[today_label] = remaining_points
 
           with open(history_file, "w") as f:
               json.dump(history, f, indent=2)
 
-          # Rellenar la gráfica respetando los días transcurridos hasta hoy
+          # Rellenar la gráfica respetando días previos y usando spanGaps
           real_data = []
           last_val = None
           for day in sprint_days:
