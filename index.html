@@ -18,9 +18,9 @@
     <div class="card">
         <h2>Burndown Chart - sprint 1</h2>
         <div class="metrics">
-            <div class="metric-box"><label>Total Story Points</label><span>22</span></div>
-            <div class="metric-box"><label>Completados</label><span style="color: #36b37e;">3</span></div>
-            <div class="metric-box"><label>Restantes</label><span style="color: #de350b;">19</span></div>
+            <div class="metric-box"><label>Total Story Points</label><span>0</span></div>
+            <div class="metric-box"><label>Completados</label><span style="color: #36b37e;">0</span></div>
+            <div class="metric-box"><label>Restantes</label><span style="color: #de350b;">0</span></div>
         </div>
         <canvas id="burndownChart" height="130"></canvas>
     </div>
@@ -29,11 +29,11 @@
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ["Aug 12", "Aug 13", "Aug 14", "Aug 15", "Aug 16", "Aug 17", "Aug 18", "Aug 19", "Aug 20", "Aug 21", "Aug 22", "Aug 23", "Aug 24", "Aug 25"],
+                labels: ["Sep 16", "Sep 17", "Sep 18", "Sep 19", "Sep 20", "Sep 21", "Sep 22", "Sep 23", "Sep 24", "Sep 25", "Sep 26", "Sep 27", "Sep 28", "Sep 29"],
                 datasets: [
                     {
                         label: 'Línea Guía Ideal',
-                        data: [22.0, 20.31, 18.62, 16.92, 15.23, 13.54, 11.85, 10.15, 8.46, 6.77, 5.08, 3.38, 1.69, 0.0],
+                        data: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                         borderColor: '#8993a4',
                         borderDash: [6, 6],
                         borderWidth: 2,
@@ -42,7 +42,7 @@
                     },
                     {
                         label: 'Puntos Restantes (Real)',
-                        data: [22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22],
+                        data: [0, null, null, null, null, null, null, null, null, null, null, null, null, null],
                         borderColor: '#de350b',
                         backgroundColor: 'rgba(222, 53, 11, 0.05)',
                         borderWidth: 2.5,
